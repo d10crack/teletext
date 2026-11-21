@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Teletext">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Teletext Dani</title>
+<style>
+:root{--bk:#000;--w:#fff;--y:#ff0;--c:#0ff;--g:#0f0;--r:#f33;--m:#f0f;--b:#22f;--dim:#8a8a8a;--line:#1f1f1f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bk);color:var(--w);font-family:"Consolas","Lucida Console","Courier New",monospace;font-size:15px;line-height:1.35}
+a{color:var(--c);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1280px;margin:0 auto;padding:10px 14px 60px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-weight:bold;font-size:18px;letter-spacing:1px}
+.top .pn{color:var(--w)}.top .brand{background:var(--b);color:var(--y);padding:0 10px}
+.top .clock{margin-left:auto;color:var(--y)}
+.banner{margin:8px 0 6px;padding:6px 10px;font-weight:bold;font-size:30px;letter-spacing:3px;line-height:1.1;text-transform:uppercase}
+.banner small{display:block;font-size:13px;letter-spacing:1px;font-weight:normal;color:var(--w);text-transform:none}
+.bg-r{background:#b00000}.bg-g{background:#007a00}.bg-y{background:#8a7d00}.bg-c{background:#006e7a}.bg-m{background:#7a007a}.bg-b{background:#2222aa}.bg-o{background:#a04a00}
+.status{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--dim);margin-bottom:10px}
+.status b{color:var(--w)}
+.blink{animation:bl 1s steps(2,start) infinite;color:var(--y)}@keyframes bl{to{visibility:hidden}}
+button{font-family:inherit;font-weight:bold;font-size:13px;background:var(--bk);color:var(--y);border:2px solid var(--y);padding:3px 10px;cursor:pointer}
+button:hover{background:var(--y);color:var(--bk)}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(520px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.box{border:1px solid #333;padding:10px 12px;background:#050505;min-width:0}
+.box h3{margin:0 0 8px;font-size:15px;letter-spacing:1px;text-transform:uppercase}
+.h{font-weight:bold;letter-spacing:1px;margin:18px 0 8px;font-size:17px;text-transform:uppercase}
+.y{color:var(--y)}.c{color:var(--c)}.g{color:var(--g)}.r{color:var(--r)}.m{color:var(--m)}.w{color:var(--w)}.d{color:var(--dim)}
+.big{font-size:26px;font-weight:bold}.mid{font-size:19px;font-weight:bold}.sm{font-size:12px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:2px 6px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{color:var(--c);font-weight:bold;font-size:12px;text-transform:uppercase}
+td.n,th.n{text-align:right}
+td.wrapc{white-space:normal}
+tr.me td{background:#202000;color:var(--y);font-weight:bold}
+.chip{display:inline-block;padding:0 6px;margin:0 4px 4px 0;font-size:12px;font-weight:bold}
+.chip.r{background:var(--r);color:#000}.chip.g{background:var(--g);color:#000}.chip.y{background:var(--y);color:#000}.chip.c{background:var(--c);color:#000}.chip.m{background:var(--m);color:#000}.chip.w{background:#fff;color:#000}
+.res{display:inline-block;width:20px;text-align:center;font-weight:bold;color:#000;margin-right:6px}
+.res.W{background:var(--g)}.res.L{background:var(--r)}.res.D{background:var(--y)}
+.vbar{display:inline-block;height:9px;background:var(--m);vertical-align:middle}
+details summary{cursor:pointer;color:var(--c);font-size:13px;margin-top:6px}
+.kv{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:2px 0}
+.news a{display:block;padding:3px 0;border-bottom:1px solid var(--line);color:var(--w)}
+.news a:hover{color:var(--y);text-decoration:none}
+.news .src{color:var(--c);font-size:12px;margin-right:6px}
+.foot{margin-top:20px;font-size:12px;color:var(--dim);border-top:2px solid var(--b);padding-top:8px}
+.foot .err{color:var(--r)}
+.race{position:relative}
+.race.star{border:2px solid var(--y);background:#0d0d00}
+.cd{font-size:34px;font-weight:bold;line-height:1}
+.fast{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(7,1fr);z-index:5}
+.fast a{display:block;text-align:center;font-weight:bold;padding:7px 4px;color:#000;letter-spacing:1px;font-size:14px}
+.fast a.on{outline:3px solid #fff;outline-offset:-3px}
+.fast .f1{background:var(--r)}.fast .f2{background:var(--g)}.fast .f3{background:var(--y)}.fast .f4{background:var(--c)}.fast .f5{background:var(--m)}.fast .f6{background:#66f}.fast .f7{background:#f80}
+.wx{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center;font-size:12px}
+.wx div{border:1px solid var(--line);padding:3px 0}
+select{font-family:inherit;background:#000;color:var(--y);border:1px solid var(--y)}
+.loading{padding:40px 0;color:var(--y);font-size:20px}
+.cg{grid-template-columns:minmax(0,2fr) minmax(300px,1fr)}
+.cfil{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+button.cm.on{background:var(--y);color:#000}
+input[type=search]{font-family:inherit;font-size:13px;background:#000;color:var(--w);border:1px solid var(--y);padding:3px 6px;flex:1;min-width:120px}
+.cdh{margin:10px 0 2px;padding:2px 6px;background:var(--b);color:var(--y);font-weight:bold;letter-spacing:1px;text-transform:uppercase}
+.cdh.we{background:#7a007a;color:#fff}
+.crow{display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.ct{min-width:44px;font-weight:bold}.cb{flex:1;min-width:0;overflow-wrap:anywhere}.cp{white-space:nowrap;font-weight:bold;text-align:right}
+@media(max-width:600px){.g2,.g3{grid-template-columns:1fr}.cg{grid-template-columns:minmax(0,1fr)}.banner{font-size:22px}
+  html,body{font-size:13px}.wrap{padding:8px 8px calc(64px + env(safe-area-inset-bottom))}
+  .box{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}td,th{padding:2px 4px}
+  .top{font-size:15px;gap:8px}.cd{font-size:28px}
+  .fast{padding-bottom:env(safe-area-inset-bottom);background:#000}.fast a{font-size:10px;letter-spacing:0;padding:8px 1px;line-height:1.2;display:flex;align-items:center;justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="pn" id="pn">P100</span>
+    <span class="brand">TELETEXT DANI</span>
+    <span class="d" id="typed"></span>
+    <span class="clock" id="clock"></span>
+  </div>
+  <div class="banner" id="banner"></div>
+  <div class="status" id="status"></div>
+  <div id="page"><div class="loading">Searching for page...</div></div>
+  <div class="foot" id="foot"></div>
+</div>
+<nav class="fast">
+  <a href="#100" class="f1" data-p="100">100 FOOD</a>
+  <a href="#200" class="f2" data-p="200">200 SPORTS</a>
+  <a href="#300" class="f3" data-p="300">300 RACES</a>
+  <a href="#400" class="f4" data-p="400">400 SPAIN &amp; CAT</a>
+  <a href="#500" class="f5" data-p="500">500 CONCERTS</a>
+  <a href="#600" class="f6" data-p="600">600 WEEKEND</a>
+  <a href="#700" class="f7" data-p="700">700 TRAINING</a>
+</nav>
+<script>
+'use strict';
+const TZ = 'Europe/Madrid';
+const PAGES = {
+  100: {key: 'food',   title: 'Food prices',          sub: 'Mercadona shelf prices and INE consumer price index', bg: 'bg-r'},
+  200: {key: 'sports', title: 'Sports',               sub: 'Knicks, FC Barcelona, Girona FC, Basquet Girona', bg: 'bg-g'},
+  300: {key: 'races',  title: 'Races 2027',           sub: 'My calendar, race-day weather, Catalan triathlon, news', bg: 'bg-y'},
+  400: {key: 'spain',  title: 'Spain and Catalonia',  sub: 'Fuel, electricity, inflation, jobs, currency, weather', bg: 'bg-c'},
+  500: {key: 'concerts', title: 'Concerts in Catalonia', sub: 'Next 60 days everywhere, big Barcelona venues a year ahead', bg: 'bg-m'},
+  600: {key: 'weekend', title: 'This weekend', sub: 'Weather, games, races and concerts near home, Friday evening to Sunday', bg: 'bg-b', compose: weekendData},
+  700: {key: 'training', title: 'My training', sub: 'Swim, bike, run from Garmin via intervals.icu: totals, intensity, best efforts, plan, fitness', bg: 'bg-o'}
+};
+const RENDER = {};
+let cur = 100, timer = null, data = {};
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch])); }
+function isNum(v) { return typeof v === 'number' && isFinite(v); }
+function f(v, d = 2) { return isNum(v) ? v.toFixed(d) : '--'; }
+function eur(v, d = 2) { return isNum(v) ? v.toFixed(d) + ' \u20ac' : '--'; }
+/* sign + colour. up=true means "a rise is bad" (prices): rise red, fall green */
+function chg(v, unit = '%', up = true, d = 1) {
+  if (!isNum(v)) return '<span class="d">--</span>';
+  const cls = v === 0 ? 'w' : ((v > 0) === up ? 'r' : 'g');
+  return `<span class="${cls}">${v > 0 ? '+' : ''}${v.toFixed(d)}${unit}</span>`;
+}
+function link(url, text) { return /^https?:\/\//i.test(url || '') ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : esc(text); }
+function dt(iso, opt) {
+  if (!iso) return '--';
+  const x = new Date(iso);
+  if (isNaN(x)) return esc(iso);
+  return x.toLocaleString('en-GB', Object.assign({timeZone: TZ}, opt || {weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'}));
+}
+function dayOnly(ymd) { /* 'YYYY-MM-DD' calendar date, no timezone shift */
+  if (!ymd) return '--';
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, 12)).toLocaleDateString('en-GB', {timeZone: 'UTC', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'});
+}
+function todayMadrid() { return new Date().toLocaleDateString('en-CA', {timeZone: TZ}); }
+function daysTo(ymd) {
+  if (!ymd) return null;
+  const a = Date.parse(todayMadrid() + 'T00:00:00Z'), b = Date.parse(ymd + 'T00:00:00Z');
+  return Math.round((b - a) / 86400000);
+}
+function ago(sec) {
+  if (!isNum(sec)) return 'unknown';
+  if (sec < 90) return Math.round(sec) + ' s ago';
+  if (sec < 5400) return Math.round(sec / 60) + ' min ago';
+  if (sec < 172800) return (sec / 3600).toFixed(1) + ' h ago';
+  return Math.round(sec / 86400) + ' days ago';
+}
+/* hand-built SVG sparkline; needs 2+ points, otherwise says the history is still building */
+function spark(arr, w = 120, h = 26, color = '#0ff', label) {
+  const v = (arr || []).filter(isNum);
+  if (v.length < 2) return `<span class="d sm">${label !== undefined ? label : 'history builds daily'}</span>`;
+  const lo = Math.min(...v), hi = Math.max(...v), span = (hi - lo) || 1;
+  const pts = v.map((y, i) => [(i * (w - 4) / (v.length - 1) + 2).toFixed(1), (h - 3 - (y - lo) * (h - 6) / span).toFixed(1)]);
+  const last = pts[pts.length - 1];
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="vertical-align:middle"><polyline fill="none" stroke="${color}" stroke-width="1.6" points="${pts.map(p => p.join(',')).join(' ')}"/><circle cx="${last[0]}" cy="${last[1]}" r="2.4" fill="#ff0"/></svg>`;
+}
+function newsList(items, n = 8) {
+  if (!items || !items.length) return '<div class="d">No headlines this refresh.</div>';
+  return '<div class="news">' + items.slice(0, n).map(a =>
+    `<a href="${esc(a.link)}" target="_blank" rel="noopener"><span class="src">${esc(a.source || '')}</span>${esc(a.title)}<span class="d sm"> ${a.date ? dt(a.date, {day: '2-digit', month: 'short'}) : ''}</span></a>`).join('') + '</div>';
+}
+
+/* ---------- shell: clock, page switching, refresh ---------- */
+function tick() {
+  document.getElementById('clock').textContent = new Date().toLocaleString('en-GB', {timeZone: TZ, weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit'});
+}
+function statusLine(d) {
+  const s = [];
+  if (d.from_seed) s.push(`<span class="y">Showing the bundled snapshot of ${dt(d.generated)}: live sources not reached yet</span>`);
+  else s.push(`Updated <b>${dt(d.generated)}</b> (${ago(d.age_s)}${isNum(d.took_s) ? ', took ' + f(d.took_s, 1) + ' s' : ''})`);
+  if (d.live && d.live.ok) s.push(`<span class="g">Scores live from ESPN at <b>${dt(d.live.at, {hour: '2-digit', minute: '2-digit'})}</b> (${d.live.ok} of ${d.live.of} teams; Basquet Girona, players and headlines from the copy above)</span>`);
+  if (d.refreshing) s.push('<span class="blink">REFRESHING...</span>');
+  if (d.refresh_error) s.push(`<span class="r">Last refresh failed${d.last_try ? ' at ' + dt(d.last_try, {hour: '2-digit', minute: '2-digit'}) : ''}: ${esc(d.refresh_error)}. Showing the last good copy.</span>`);
+  const kept = Object.entries(d.kept || {});
+  if (kept.length) s.push(`<span class="y">Kept from an earlier refresh (source failed now): ${kept.map(([k, g]) => esc(k) + ' of ' + dt(g, {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'})).join(', ')}</span>`);
+  s.push(`<button id="rf">${STATIC ? 'RELOAD' : 'REFRESH NOW'}</button>`);
+  s.push(STATIC ? '<span class="sm">GitHub rebuilds sports on every run (asked hourly, it skips some), concerts every 6 h, the other pages once a day after 06:00. Swipe left/right or tap the colour bar to change page</span>'
+                : '<span class="sm">Keys: type 100 / 200 / 300 / 400 / 500, or arrows</span>');
+  document.getElementById('status').innerHTML = s.join('');
+  document.getElementById('rf').onclick = () => load(cur, true);
+}
+function footer(d) {
+  const src = (d.sources || []).map(s => link(s[1], s[0])).join(' &middot; ');
+  const errs = (d.errors || []).map(e => `<div class="err">Source failed this refresh: ${esc(e)}</div>`).join('');
+  document.getElementById('foot').innerHTML = `<div>Sources: ${src || '--'}</div>${errs}<div>Teletext Dani &middot; page ${cur} &middot; all times Europe/Madrid &middot; history stored in ${esc(d.storage || '--')}</div>`;
+}
+// Two ways to run: with app.py (live /api) or as a static site (GitHub Pages, iPhone home screen),
+// where a scheduled GitHub Action rebuilds pages/<key>.json every hour.
+let STATIC = false;
+async function getPage(key, force) {
+  if (!STATIC) {
+    try {
+      const r = await fetch(`api/${key}${force ? '?force=1' : ''}`, {cache: 'no-store'});
+      if (r.ok && (r.headers.get('content-type') || '').includes('json')) return await r.json();
+    } catch (e) { /* fall through to the static copy */ }
+    STATIC = true;
+  }
+  const r = await fetch(`pages/${key}.json?t=${Date.now()}`, {cache: 'no-store'});
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const d = await r.json();
+  if (d.generated) d.age_s = Math.round((Date.now() - Date.parse(d.generated)) / 1000);
+  d.refreshing = false;
+  if (key === 'sports') await liveSports(d);
+  return d;
+}
+async function load(p, force) {
+  const P = PAGES[p];
+  clearTimeout(timer);
+  try {
+    const d = P.compose ? await P.compose(force) : await getPage(P.key, force);
+    if (p !== cur) return;
+    data[P.key] = d;
+    statusLine(d);
+    try { document.getElementById('page').innerHTML = RENDER[P.key](d); }
+    catch (e) { document.getElementById('page').innerHTML = `<div class="r">This page could not be drawn: ${esc(e.message)}</div>`; console.error(e); }
+    if (P.after) P.after(d);
+    footer(d);
+    timer = setTimeout(() => load(cur), d.refreshing ? 4000 : 300000);
+  } catch (e) {
+    document.getElementById('status').innerHTML = `<span class="r">${STATIC ? 'No connection and no saved copy of this page' : 'Server not reachable'} (${esc(e.message)}). Retrying in 15 s.</span>`;
+    timer = setTimeout(() => load(cur), 15000);
+  }
+}
+function go(p) {
+  p = Number(p);
+  if (!PAGES[p]) return;
+  cur = p;
+  const P = PAGES[p];
+  document.getElementById('pn').textContent = 'P' + p;
+  const b = document.getElementById('banner');
+  b.className = 'banner ' + P.bg;
+  b.innerHTML = `${esc(P.title)}<small>${esc(P.sub)}</small>`;
+  document.querySelectorAll('.fast a').forEach(a => a.classList.toggle('on', a.dataset.p == p));
+  if (location.hash !== '#' + p) history.replaceState(null, '', '#' + p);
+  document.getElementById('page').innerHTML = '<div class="loading">Searching for page ' + p + '...</div>';
+  load(p);
+}
+let typed = '';
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  const keys = Object.keys(PAGES).map(Number), i = keys.indexOf(cur);
+  if (e.key === 'ArrowRight') return go(keys[(i + 1) % keys.length]);
+  if (e.key === 'ArrowLeft') return go(keys[(i + keys.length - 1) % keys.length]);
+  if (/^\d$/.test(e.key)) {
+    typed = (typed + e.key).slice(-3);
+    document.getElementById('typed').textContent = typed.padEnd(3, '-');
+    if (typed.length === 3) { if (PAGES[typed]) go(typed); typed = ''; setTimeout(() => { document.getElementById('typed').textContent = ''; }, 600); }
+  }
+});
+let tx = null, ty = 0;   // swipe between pages on a phone
+document.addEventListener('touchstart', e => { const t = e.touches[0]; tx = t.clientX; ty = t.clientY; }, {passive: true});
+document.addEventListener('touchend', e => {
+  if (tx === null) return;
+  const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+  tx = null;
+  if (Math.abs(dx) < 80 || Math.abs(dx) < 2 * Math.abs(dy)) return;
+  if (e.target.closest && e.target.closest('table, .scroll')) return;
+  const keys = Object.keys(PAGES).map(Number), i = keys.indexOf(cur);
+  go(keys[(i + (dx < 0 ? 1 : keys.length - 1)) % keys.length]);
+}, {passive: true});
+window.addEventListener('hashchange', () => { const p = Number(location.hash.slice(1)); if (PAGES[p] && p !== cur) go(p); });
+
+/* ---------- P100 FOOD ---------- */
+const UNIT = {kg: '/kg', l: '/L', L: '/L', dozen: '/dozen', ud: '/unit', dc: '/dozen', dz: '/dozen'};
+function u(fmt) { return UNIT[fmt] || (fmt ? '/' + fmt : ''); }
+RENDER.food = d => {
+  const ine = d.ine || [], reg = d.ine_region || {}, merc = d.mercadona || [];
+  const period = ine.length ? ine[0].period : '';
+  const byYoy = ine.filter(x => isNum(x.yoy)).slice().sort((a, b) => b.yoy - a.yoy);
+  const byVol = ine.filter(x => isNum(x.volatility)).slice().sort((a, b) => b.volatility - a.volatility);
+  const maxVol = byVol.length ? byVol[0].volatility : 1;
+  const top = (arr, k, unit, up) => arr.map(x => `<div class="kv"><span>${esc(x.label)}</span>${k === 'volatility' ? `<span class="m">${f(x[k], 2)} pts</span>` : chg(x[k], unit, up)}</div>`).join('');
+  let h = `<div class="grid g4">
+    <div class="box"><h3 class="y">Food inflation, year on year</h3>
+      <div class="kv"><span>Spain</span><span class="big">${chg(reg.Spain)}</span></div>
+      <div class="kv"><span>Catalonia</span><span class="big">${chg(reg.Catalonia)}</span></div>
+      <div class="d sm">INE, ${esc(period)}. "Food" subgroup of the CPI.</div></div>
+    <div class="box"><h3 class="r">Rising fastest (y/y)</h3>${top(byYoy.slice(0, 5), 'yoy', '%', true)}</div>
+    <div class="box"><h3 class="g">Falling fastest (y/y)</h3>${top(byYoy.slice(-5).reverse(), 'yoy', '%', true)}</div>
+    <div class="box"><h3 class="m">Most volatile, last 12 months</h3>${top(byVol.slice(0, 5), 'volatility', '', true)}
+      <div class="d sm">Volatility = standard deviation of the 12 monthly changes of the index.</div></div>
+  </div>`;
+
+  h += `<div class="h y">Supermarket basket: Mercadona, Barcelona warehouse</div>
+  <div class="d sm" style="margin-bottom:8px">Median shelf price across the aisle's products sold in its main unit (per kg, litre or dozen), today.
+  Evolution lines build up one point per day while the app runs (${d.tracked_days || 0} day${d.tracked_days === 1 ? '' : 's'} recorded so far).</div>
+  <div class="grid g3">` + merc.map(c => {
+    const rows = (c.products || []).map(p => `<tr><td class="wrapc">${link(p.url, p.name)}</td><td class="d">${esc(p.size)}</td>
+      <td class="n">${p.prev_unit_price ? `<s class="d">${eur(p.prev_unit_price)}</s> ` : ''}${eur(p.unit_price)}</td>
+      <td class="n c">${eur(p.ref_price)}${u(p.ref_format)}</td></tr>`).join('');
+    return `<div class="box"><h3 class="c">${esc(c.label)} <span class="d sm">(${c.n} products)</span></h3>
+      <div class="kv"><span>Median</span><span class="mid y">${eur(c.median)}${u(c.fmt)}</span></div>
+      <div class="kv"><span>Range today</span><span>${eur(c.min)}${u(c.fmt)} to ${eur(c.max)}${u(c.fmt)}</span></div>
+      <div class="kv"><span>vs 7 days / 30 days</span><span>${chg(c.chg7)} / ${chg(c.chg30)}</span></div>
+      <div class="kv"><span>Repriced, seen by this app${c.tracked_since ? ' since ' + dayOnly(c.tracked_since) : ''}</span><span>${(d.tracked_days || 0) > 1 && isNum(c.changed_30d) ? c.changed_30d : '<span class="d">tracking starts today</span>'}</span></div>
+      <div style="margin-top:4px">${spark(c.spark, 300, 30, '#0ff', 'evolution starts after the 2nd day')}</div>
+      <details><summary>Cheapest 12 by reference price</summary><table><tr><th>Product</th><th>Size</th><th class="n">Price</th><th class="n">Ref.</th></tr>${rows}</table></details>
+    </div>`;
+  }).join('') + `</div>`;
+
+  const ch = d.changes || [];
+  h += `<div class="h y">Biggest price moves at Mercadona</div>
+  <div class="box">${ch.length ? `<table><tr><th>Aisle</th><th>Product</th><th class="n">Before</th><th class="n">Now</th><th class="n">Change</th><th>Seen</th></tr>` +
+    ch.map(x => `<tr><td class="c">${esc(x.cat)}</td><td class="wrapc">${esc(x.name)}</td><td class="n d">${eur(x.old)}</td><td class="n">${eur(x.new)}</td>
+      <td class="n">${chg(x.pct)}</td><td class="d sm">${x.seen === 'tracked' ? 'seen by this app ' + esc(x.date) : 'Mercadona "before" price'}</td></tr>`).join('') + '</table>'
+    : '<div class="d">No price moves recorded yet.</div>'}</div>`;
+
+  let lastGroup = '';
+  h += `<div class="h y">INE consumer price index by food item, Spain (${esc(period)})</div>
+  <div class="box" style="overflow-x:auto"><table><tr><th>Group</th><th>Item</th><th>Index, last 13 months</th><th class="n">Index</th><th class="n">m/m</th><th class="n">y/y</th><th>Volatility</th></tr>` +
+    ine.map(x => {
+      const g = x.group !== lastGroup ? x.group : ''; lastGroup = x.group;
+      const idx = (x.index || []);
+      return `<tr><td class="y">${esc(g)}</td><td title="${esc(x.ine_name)}">${esc(x.label)}</td>
+        <td>${spark(idx, 150, 22, isNum(x.yoy) && x.yoy > 0 ? '#f33' : '#0f0')}</td><td class="n">${f(idx[idx.length - 1], 1)}</td>
+        <td class="n">${chg(x.mom)}</td><td class="n">${chg(x.yoy)}</td>
+        <td><span class="vbar" style="width:${isNum(x.volatility) ? Math.max(2, Math.round(x.volatility / maxVol * 90)) : 0}px"></span> <span class="d sm">${f(x.volatility, 2)}</span></td></tr>`;
+    }).join('') + `</table><div class="d sm">Index level as published by INE. A red line means the item is dearer than a year ago.</div></div>`;
+  return h;
+};
+
+/* ---------- P200 SPORTS ---------- */
+const TCOL = {knicks: 'y', barca: 'm', girona: 'r', basquet: 'c'};
+function sides(t, g) {
+  const ts = g.teams || [];
+  let me = ts.find(x => t.tid && x.id === t.tid) || ts.find(x => x.name === t.name) || ts.find(x => (t.name || '').includes(x.name)) || ts[0];
+  const opp = ts.find(x => x !== me) || {};
+  return {me: me || {}, opp};
+}
+function result(t, g) {
+  const {me, opp} = sides(t, g), a = parseFloat(me.score), b = parseFloat(opp.score);
+  if (!isNum(a) || !isNum(b)) return '';
+  if (a === b && (me.winner === true || opp.winner === true)) return me.winner ? 'W' : 'L';   /* cup tie settled on penalties */
+  return a > b ? 'W' : a < b ? 'L' : 'D';
+}
+function compName(g) { return g.comp && g.comp !== 'STD' ? g.comp : ''; }
+function gameRow(t, g, done) {
+  const {me, opp} = sides(t, g), ha = me.home ? 'vs' : '@';
+  const r = done ? result(t, g) : '';
+  const score = done ? `<span class="res ${r}">${r || '?'}</span>${esc(me.score)}-${esc(opp.score)}` : '';
+  return `<tr><td class="d">${dt(g.date)}</td><td>${ha} <b>${esc(opp.name)}</b></td><td>${score}</td>
+    <td class="d sm wrapc">${esc(compName(g))}${g.tv && !done ? ' &middot; TV: ' + esc(g.tv) : ''}${done && g.detail && g.detail !== 'Final' && g.detail !== 'FT' ? ' ' + esc(g.detail) : ''}</td></tr>`;
+}
+function untilTxt(iso) {
+  const ms = Date.parse(iso) - Date.now();
+  if (!isNum(ms)) return '';
+  if (ms < 0) return '<span class="blink">LIVE / just started</span>';
+  const h = ms / 3600000;
+  const mins = Math.round(ms / 60000);
+  if (mins < 1440) return `in ${Math.floor(mins / 60)} h ${mins % 60} min`;
+  const days = Math.floor(mins / 1440), rh = Math.round((mins % 1440) / 60);
+  if (days < 3) return `in ${days} day${days === 1 ? '' : 's'}${rh ? ' ' + rh + ' h' : ''}`;
+  return `in ${days} days`;
+}
+function standings(t) {
+  if (t.key === 'basquet') {
+    const rows = t.acb || [];
+    if (!rows.length) return '<div class="d">ACB table not available this refresh.</div>';
+    return `<table><tr><th class="n">#</th><th>Team</th><th class="n">P</th><th class="n">W</th><th class="n">L</th><th class="n">+/-</th></tr>` +
+      rows.map(r => `<tr class="${r.abbr === 'GIR' ? 'me' : ''}"><td class="n">${r.pos}</td><td>${esc(r.team)}</td><td class="n">${r.gp}</td><td class="n">${r.w}</td><td class="n">${r.l}</td><td class="n">${r.diff > 0 ? '+' : ''}${r.diff}</td></tr>`).join('') + '</table>';
+  }
+  const tb = t.table || {}, nba = t.league === 'nba';
+  const rows = (tb.rows || []).slice().sort((a, b) => Number(nba ? a.s.playoffSeed : a.s.rank) - Number(nba ? b.s.playoffSeed : b.s.rank));
+  if (!rows.length) return '<div class="d">Table not available this refresh.</div>';
+  const head = nba ? '<tr><th class="n">Seed</th><th>Team</th><th class="n">W-L</th><th class="n">GB</th><th class="n">L10</th><th class="n">Strk</th></tr>'
+                   : '<tr><th class="n">#</th><th>Team</th><th class="n">P</th><th class="n">W-D-L</th><th class="n">GD</th><th class="n">Pts</th></tr>';
+  return `<div class="d sm">${esc(tb.group || '')}</div><table>${head}` + rows.map(r => {
+    const s = r.s || {}, me = r.id === t.tid ? 'me' : '';
+    return nba ? `<tr class="${me}"><td class="n">${esc(s.playoffSeed)}</td><td>${esc(r.team)}</td><td class="n">${esc(s.overall)}</td><td class="n">${esc(s.gamesBehind)}</td><td class="n">${esc(s['Last Ten Games'] || '')}</td><td class="n">${esc(s.streak)}</td></tr>`
+               : `<tr class="${me}"><td class="n">${esc(s.rank)}</td><td>${esc(r.team)}</td><td class="n">${esc(s.gamesPlayed)}</td><td class="n">${esc(s.wins)}-${esc(s.ties)}-${esc(s.losses)}</td><td class="n">${esc(s.pointDifferential)}</td><td class="n"><b>${esc(s.points)}</b></td></tr>`;
+  }).join('') + '</table>';
+}
+function leadVal(v) {   /* ESPN soccer gives "Matches: 11, Goals: 15" */
+  const m = /Matches:\s*(\d+),\s*([A-Za-z]+):\s*(\d+)/.exec(v || '');
+  return m ? `${m[3]} <span class="d sm">in ${m[1]} games</span>` : esc(v);
+}
+function teamBox(t) {
+  const col = TCOL[t.key] || 'w', me = t.me || {};
+  let pos = '';
+  if (t.key === 'basquet') pos = me.pos ? `${me.pos}${['th', 'st', 'nd', 'rd'][me.pos % 10 < 4 && Math.floor(me.pos / 10) !== 1 ? me.pos % 10 : 0]} in Liga Endesa (ACB), ${me.w}-${me.l}` : 'ACB position unavailable';
+  else pos = `${esc(t.standing || '')}${t.league === 'nba' && me.playoffSeed ? ` &middot; East seed ${esc(me.playoffSeed)}` : ''}`;
+  const rec = t.key === 'basquet' ? (me.w != null ? `${me.w}-${me.l}` : '--') : esc(t.record || '--');
+  const lead = (t.leaders || []).map(c => `<div class="kv"><span class="c">${esc(c.cat)}</span><span>${(c.leaders || []).map(l => `${esc(l.name)} <b class="y">${leadVal(l.value)}</b>`).join('<br>')}</span></div>`).join('')
+    || `<div class="d sm">${esc(t.leaders_note || 'No player stats this refresh.')}</div>`;
+  const next = (t.next || []).map(g => gameRow(t, g, false)).join('') || '<tr><td class="d">No fixtures published.</td></tr>';
+  const byDate = (t.played || []).slice().sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  const played = byDate.slice().reverse().map(g => gameRow(t, g, true)).join('') || '<tr><td class="d">No recent results.</td></tr>';
+  const form = byDate.map(g => result(t, g)).filter(Boolean).map(r => `<span class="res ${r}">${r}</span>`).join('');
+  const links = (t.links || []).map(l => link(l[1], l[0])).join(' &middot; ');
+  return `<div class="box" id="team-${t.key}">
+    <h3 class="${col}" style="font-size:20px">${esc(t.name)} <span class="d sm">${esc(t.season || '')}</span></h3>
+    <div class="kv"><span>Record</span><span class="mid">${rec}</span></div>
+    <div class="kv"><span>Position</span><span class="${col}">${pos}</span></div>
+    <div class="kv"><span>Form (oldest to newest)</span><span>${form || '--'}</span></div>
+    <div class="h ${col}" style="font-size:14px;margin-top:10px">Next games</div><table>${next}</table>
+    <div class="h ${col}" style="font-size:14px">Last results</div><table>${played}</table>
+    <div class="h ${col}" style="font-size:14px">Best players</div>${lead}
+    <details><summary>Standings</summary>${standings(t)}</details>
+    <details><summary>Headlines</summary>${newsList(t.news, 6)}</details>
+    ${links ? `<div class="sm" style="margin-top:6px">${links}</div>` : ''}
+  </div>`;
+}
+/* Live scores on the static site: ESPN's public API answers browsers (CORS *), so Knicks, Barca and
+   Girona FC are re-read at every open instead of waiting for a GitHub run. Same shape as app.py
+   espn_events / espn_standings; a team that fails keeps the copy from the last run. */
+const ESPN = 'https://site.api.espn.com/apis';
+async function espnJson(u) {
+  const c = new AbortController(), t = setTimeout(() => c.abort(), 8000);
+  try {
+    const r = await fetch(u, {signal: c.signal, cache: 'no-store'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+function espnEvents(d) {
+  return (d.events || []).map(e => {
+    const c = e.competitions[0], st = (c.status || {}).type || {};
+    const teams = (c.competitors || []).map(t => {
+      let sc = t.score;
+      if (sc && typeof sc === 'object') sc = sc.displayValue;
+      return {name: t.team.shortDisplayName || t.team.displayName, id: t.team.id, home: t.homeAway === 'home', score: sc, winner: t.winner};
+    });
+    const comp = e.league && typeof e.league === 'object' ? (e.league.abbreviation || e.league.name || '') : ((c.type || {}).abbreviation || '');
+    const tv = (c.broadcasts || []).filter(b => b.media).map(b => b.media.shortName || '').join(', ');
+    return {date: e.date, name: e.shortName || e.name, completed: !!st.completed, state: st.state, detail: st.shortDetail || '',
+            teams, comp, venue: (c.venue || {}).fullName || '', tv};
+  });
+}
+function espnTable(d, tid, sport) {
+  for (const g of d.children || [d]) {
+    const en = (g.standings || {}).entries || [];
+    if (!en.some(e => e.team.id === tid)) continue;
+    const rows = en.map(e => {
+      const s = {};
+      (e.stats || []).forEach(x => { s[x.name] = x.displayValue; });
+      return {id: e.team.id, team: e.team.shortDisplayName || e.team.displayName, abbr: e.team.abbreviation || '', s};
+    });
+    const k = sport === 'soccer' ? 'rank' : 'playoffSeed', n = v => { const x = parseFloat(v); return isNaN(x) ? 99 : x; };
+    rows.sort((a, b) => n(a.s[k]) - n(b.s[k]));
+    return {group: g.name || '', rows};
+  }
+  return null;
+}
+async function liveTeam(t) {
+  const sport = t.league === 'nba' ? 'basketball' : 'soccer', base = `${ESPN}/site/v2/sports/${sport}/${sport === 'soccer' ? 'all' : t.league}/teams/${t.tid}/schedule`;
+  const [res, fix, tab] = await Promise.all([espnJson(base), espnJson(base + '?fixture=true'),
+                                             espnJson(`${ESPN}/v2/sports/${sport}/${t.league}/standings`).catch(() => null)]);
+  const all = {};
+  espnEvents(res).concat(espnEvents(fix)).forEach(e => { all[e.date + e.name] = e; });
+  const evs = Object.values(all).sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+  if (!evs.length) throw new Error('no games in the answer');
+  t.played = evs.filter(e => e.completed).slice(-6).reverse();
+  t.next = evs.filter(e => !e.completed).slice(0, 6);
+  const tm = res.team || {};
+  if (tm.recordSummary) t.record = tm.recordSummary;
+  if (tm.standingSummary) t.standing = tm.standingSummary;
+  const table = tab && espnTable(tab, t.tid, sport);
+  if (table) {
+    t.table = table;
+    const i = table.rows.findIndex(r => r.id === t.tid);
+    if (i >= 0) t.me = Object.assign({pos: i + 1}, table.rows[i].s);
+  }
+}
+async function liveSports(d) {
+  const ts = (d.teams || []).filter(t => t.tid && t.league && t.key !== 'basquet');
+  if (!ts.length) return;
+  const r = await Promise.allSettled(ts.map(liveTeam));
+  d.errors = (d.errors || []).slice();
+  r.forEach((x, i) => {
+    if (x.status === 'rejected') d.errors.push(`live ESPN update for ${ts[i].name}: ${(x.reason && x.reason.message) || x.reason} (showing the copy from the last GitHub run)`);
+  });
+  d.live = {at: new Date().toISOString(), ok: r.filter(x => x.status === 'fulfilled').length, of: ts.length};
+}
+RENDER.sports = d => {
+  const ts = d.teams || [];
+  const strip = ts.map(t => {
+    const g = (t.next || [])[0], col = TCOL[t.key] || 'w';
+    if (!g) return `<div class="box"><h3 class="${col}">${esc(t.name)}</h3><div class="d">No fixture published</div></div>`;
+    const {me, opp} = sides(t, g);
+    return `<div class="box"><h3 class="${col}">${esc(t.name)}</h3>
+      <div class="mid">${me.home ? 'vs' : '@'} ${esc(opp.name)}</div>
+      <div>${dt(g.date)} <span class="y">${untilTxt(g.date)}</span></div>
+      <div class="d sm">${esc(compName(g) || (t.league || '').toUpperCase())}${g.venue ? ' &middot; ' + esc(g.venue) : ''}</div></div>`;
+  }).join('');
+  return `<div class="h y" style="margin-top:4px">Next up</div><div class="grid g4">${strip}</div>
+    <div class="grid g2" style="margin-top:12px">${ts.map(teamBox).join('')}</div>`;
+};
+
+/* ---------- P600 THIS WEEKEND (built in the browser from P200, P300, P400 and P500: no new source, no extra GitHub run) ---------- */
+function addDays(ymd, n) { return new Date(Date.parse(ymd + 'T12:00:00Z') + n * 86400000).toISOString().slice(0, 10); }
+function wkDays() {   /* Fri-Sat-Sun of this weekend when it is Fri/Sat/Sun in Madrid, otherwise of the next one */
+  const t = todayMadrid(), wd = new Date(t + 'T12:00:00Z').getUTCDay();   /* 0 Sun .. 6 Sat */
+  const fri = wd === 0 ? addDays(t, -2) : wd === 6 ? addDays(t, -1) : addDays(t, (5 - wd + 7) % 7);
+  return [fri, addDays(fri, 1), addDays(fri, 2)];
+}
+function madridYmd(iso) { return new Date(iso).toLocaleDateString('en-CA', {timeZone: TZ}); }
+function madridHm(iso) { return new Date(iso).toLocaleTimeString('en-GB', {timeZone: TZ, hour: '2-digit', minute: '2-digit'}); }
+async function weekendData(force) {
+  const keys = ['sports', 'races', 'spain', 'concerts'], parts = {}, errors = [], sources = [];
+  const r = await Promise.allSettled(keys.map(k => getPage(k, force)));
+  r.forEach((x, i) => {
+    if (x.status === 'fulfilled') { parts[keys[i]] = x.value; } else errors.push(`P${[200, 300, 400, 500][i]} ${keys[i]}: ${(x.reason && x.reason.message) || x.reason}`);
+  });
+  if (!Object.keys(parts).length) throw new Error('none of the four pages could be read');
+  Object.values(parts).forEach(p => (p.sources || []).forEach(s => { if (!sources.some(o => o[0] === s[0])) sources.push(s); }));
+  const gens = Object.values(parts).map(p => p.generated).filter(Boolean).sort();
+  const d = {page: 'weekend', parts, errors, sources, generated: gens[0], refreshing: Object.values(parts).some(p => p.refreshing),
+             live: parts.sports && parts.sports.live, kept: {}};
+  if (d.generated) d.age_s = Math.round((Date.now() - Date.parse(d.generated)) / 1000);
+  return d;
+}
+function wkItems(P, ymd, isFri) {
+  const out = [];
+  ((P.sports || {}).teams || []).forEach(t => (t.next || []).forEach(g => {
+    if (madridYmd(g.date) !== ymd || (isFri && madridHm(g.date) < '17:00')) return;
+    const {me, opp} = sides(t, g), homeNear = me.home && (t.key === 'girona' || t.key === 'basquet');
+    out.push({t: madridHm(g.date), kind: 'g', html: `<b class="${TCOL[t.key] || 'w'}">${esc(t.name)}</b> ${me.home ? 'vs' : '@'} <b>${esc(opp.name)}</b>
+      ${homeNear ? '<span class="chip g">HOME, NEAR YOU</span>' : ''}<div class="d sm">${esc(compName(g))}${g.venue ? ' &middot; ' + esc(g.venue) : ''}${g.tv ? ' &middot; TV: ' + esc(g.tv) : ''}</div>`});
+  }));
+  ((P.races || {}).races || []).filter(r => r.date === ymd).forEach(r => out.push({t: r.time || '', kind: 'r', html:
+    `<span class="chip y">MY RACE</span><b class="y">${link(r.url, r.name)}</b><div class="d sm">${esc(r.place)} &middot; ${esc(r.distance)}</div>`}));
+  ((P.races || {}).catalonia || []).filter(r => r.date === ymd).forEach(r => out.push({t: '', kind: 'r', html:
+    `${link(r.url, r.title)}<div class="d sm">${esc(r.type)} (FCTRI)</div>`}));
+  const cs = ((P.concerts || {}).concerts || []).filter(c => c.date === ymd && (!isFri || !c.time || c.time >= '17:00'));
+  const near = cs.filter(c => isNum(c.km) && c.km <= 40).sort((a, b) => a.km - b.km);
+  const big = cs.filter(c => c.big && !near.includes(c));
+  const crow = c => ({t: c.time || '', kind: 'c', html: `${link(c.url, c.name)}${c.price === 'Free' ? ' <span class="chip g">FREE</span>' : ''}
+    <div class="d sm">${esc(c.venue || '')}, ${esc(c.town)}${isNum(c.km) ? ' &middot; ' + f(c.km, 0) + ' km' : ''}${c.price && c.price !== 'Free' ? ' &middot; ' + esc(c.price) : ''}</div>`});
+  return {list: out, near: near.map(crow), big: big.slice(0, 6).map(crow), bigMore: Math.max(0, big.length - 6), other: cs.length - near.length - big.length};
+}
+function wkWeather(P, ymd) {
+  const ws = ((P.spain || {}).weather || []).map(w => [w.place, (w.days || []).find(x => x.d === ymd)]);
+  if (!ws.length || ws.every(w => !w[1])) return '<div class="d sm">Forecast not out yet for this day.</div>';
+  return ws.map(([pl, x]) => `<div class="kv sm"><span>${esc(pl.replace(' de Farners', ''))}</span><span>${x ? `<span class="y">${f(x.max, 0)}&deg;</span>/<span class="c">${f(x.min, 0)}&deg;</span> ${esc(x.txt)}${isNum(x.rain) ? ` <span class="${x.rain >= 50 ? 'r' : 'd'}">rain ${x.rain}%</span>` : ''}` : '--'}</span></div>`).join('');
+}
+const WKCOL = {g: 'var(--g)', r: 'var(--y)', c: 'var(--m)'};
+RENDER.weekend = d => {
+  const P = d.parts || {}, days = wkDays(), today = todayMadrid();
+  let tot = {g: 0, r: 0, near: 0};
+  const cols = days.map((ymd, i) => {
+    const it = wkItems(P, ymd, i === 0), past = ymd < today;
+    it.list.forEach(x => { tot[x.kind] = (tot[x.kind] || 0) + 1; });
+    tot.near += it.near.length;
+    const rows = l => l.sort((a, b) => (a.t || '99').localeCompare(b.t || '99')).map(x =>
+      `<div class="crow" style="border-left:4px solid ${WKCOL[x.kind]};padding-left:6px"><span class="ct">${esc(x.t || '--')}</span><span class="cb">${x.html}</span></div>`).join('');
+    const title = new Date(ymd + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: 'UTC', weekday: 'long', day: '2-digit', month: 'short'});
+    return `<div class="box"${past ? ' style="opacity:.45"' : ''}><h3 class="y" style="font-size:18px">${title}${i === 0 ? ' <span class="d sm">from 17:00</span>' : ''}${ymd === today ? ' <span class="chip y">TODAY</span>' : ''}</h3>
+      ${wkWeather(P, ymd)}
+      <div class="h g" style="font-size:14px;margin-top:10px">Games and races</div>${rows(it.list) || '<div class="d sm">No games or races.</div>'}
+      <div class="h m" style="font-size:14px">Concerts near home (40 km)</div>${rows(it.near) || '<div class="d sm">None listed.</div>'}
+      <div class="h m" style="font-size:14px">Big Barcelona venues</div>${rows(it.big) || '<div class="d sm">None listed.</div>'}
+      ${it.bigMore || it.other ? `<div class="d sm" style="margin-top:6px">${it.bigMore ? it.bigMore + ' more at big venues, ' : ''}${it.other} more elsewhere in Catalonia: <a href="#500">P500</a></div>` : ''}
+    </div>`;
+  }).join('');
+  return `<div class="sm" style="margin:4px 0 8px"><span class="chip g">${tot.g || 0} GAMES</span><span class="chip y">${tot.r || 0} RACES</span><span class="chip m">${tot.near} CONCERTS NEAR HOME</span>
+    <span class="d">${dayOnly(days[0])} to Sunday. Colour bar: green game, yellow race, magenta concert.</span></div>
+    <div class="grid g3">${cols}</div>
+    <details class="d sm" style="margin-top:8px"><summary>About this page</summary>Nothing here is fetched separately: it regroups what P200 Sports (live ESPN scores when on the phone), P300 Races (your races and the FCTRI calendar), P400 (8-day forecast) and P500 Concerts already hold, so each part is as fresh as its own page. Friday counts from 17:00. Near home = within 40 km of Santa Coloma de Farners in a straight line. "Home, near you" = Girona FC at Montilivi or Basquet Girona at Fontajau.</details>`;
+};
+
+/* ---------- P700 TRAINING (intervals.icu, synced from Garmin; training data only, the site is public) ---------- */
+const SPC = {swim: '#0ff', bike: '#ff0', run: '#0f0', other: '#8a8a8a'}, SPN = {swim: 'Swim', bike: 'Bike', run: 'Run', other: 'Other'};
+const TRI = ['swim', 'bike', 'run'], ALLSP = ['swim', 'bike', 'run', 'other'];
+const SVGF = 'font-family="Consolas,monospace"';
+function hm(h) { if (!isNum(h)) return '--'; const m = Math.round(h * 60); return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`; }
+function mmss(s) { if (!isNum(s) || s <= 0) return '--'; s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
+function paceTxt(sp, kmh) { if (!isNum(kmh) || kmh <= 0) return '--'; return sp === 'run' ? mmss(3600 / kmh) + '/km' : sp === 'swim' ? mmss(360 / kmh) + '/100m' : f(kmh, 1) + ' km/h'; }
+function kmTxt(sp, km) { return !isNum(km) || km <= 0 ? '--' : sp === 'swim' ? Math.round(km * 1000) + ' m' : f(km, 1) + ' km'; }
+function shortDay(ymd) { return dayOnly(ymd).replace(/ \d{4}$/, ''); }
+function formBand(v) {   /* intervals.icu form zones */
+  if (!isNum(v)) return ['d', '--'];
+  return v > 25 ? ['c', 'Transition (detraining)'] : v > 5 ? ['c', 'Fresh'] : v > -10 ? ['d', 'Grey zone'] : v >= -30 ? ['g', 'Optimal training'] : ['r', 'High risk'];
+}
+function stackBars(items, label, hiLast) {   /* items: [{label, swim:{h}, bike:{h}, ...}], optional .load for a line */
+  const W = 1200, H = 220, top = 18, base = H - 26, bw = (W - 50) / items.length;
+  const tot = w => ALLSP.reduce((a, s) => a + ((w[s] || {}).h || 0), 0);
+  const mx = Math.max(1, ...items.map(tot)), lmx = Math.max(1, ...items.map(w => w.load || 0));
+  const step = mx > 40 ? 10 : mx > 12 ? 4 : mx > 4 ? 2 : 1;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;background:#050505;border:1px solid #333">`;
+  for (let g = 0; g <= mx; g += step) { const y = base - g / mx * (base - top); s += `<line x1="40" x2="${W}" y1="${y}" y2="${y}" stroke="#1f1f1f"/><text x="4" y="${y + 4}" fill="#888" font-size="12" ${SVGF}>${g}h</text>`; }
+  const pts = [];
+  items.forEach((w, i) => {
+    let y = base; const x = 44 + i * bw, cx = x + (bw - 6) / 2;
+    ALLSP.forEach(sp => {
+      const h = ((w[sp] || {}).h || 0) / mx * (base - top);
+      if (h > 0) { y -= h; s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 6).toFixed(1)}" height="${h.toFixed(1)}" fill="${SPC[sp]}"><title>${SPN[sp]} ${hm(w[sp].h)}, ${kmTxt(sp, w[sp].km)}, ${w[sp].n}x</title></rect>`; }
+    });
+    const t = tot(w);
+    if (t) s += `<text x="${cx.toFixed(1)}" y="${(y - 4).toFixed(1)}" fill="#fff" font-size="11" text-anchor="middle" ${SVGF}>${hm(t)}</text>`;
+    s += `<text x="${cx.toFixed(1)}" y="${H - 8}" fill="${hiLast && i === items.length - 1 ? '#ff0' : '#888'}" font-size="11" text-anchor="middle" ${SVGF}>${label(w)}</text>`;
+    if (isNum(w.load)) pts.push(`${cx.toFixed(1)},${(base - w.load / lmx * (base - top)).toFixed(1)}`);
+  });
+  if (pts.length > 1) s += `<polyline fill="none" stroke="#f80" stroke-width="2" stroke-dasharray="5 3" points="${pts.join(' ')}"/><text x="${W - 6}" y="${top - 4}" fill="#f80" font-size="11" text-anchor="end" ${SVGF}>- - training load (max ${lmx})</text>`;
+  return s + '</svg>';
+}
+function fitChart(fs) {
+  if (fs.length < 2) return '<div class="d">Not enough fitness history yet.</div>';
+  const W = 1200, H = 230, top = 12, mid = 150, bot = H - 22;
+  const vals = fs.flatMap(x => [x.ctl, x.atl]), mx = Math.max(10, ...vals) * 1.1;
+  const fm = fs.map(x => x.ctl - x.atl), fx = Math.max(30, ...fm.map(Math.abs));
+  const X = i => 40 + i / (fs.length - 1) * (W - 50), Y = v => mid - v / mx * (mid - top), FY = v => bot - (bot - mid - 8) / 2 - v / fx * ((bot - mid - 8) / 2);
+  const line = (k, c) => `<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${fs.map((x, i) => X(i).toFixed(1) + ',' + Y(x[k]).toFixed(1)).join(' ')}"/>`;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;background:#050505;border:1px solid #333">`;
+  s += `<rect x="40" y="${FY(-10)}" width="${W - 50}" height="${FY(-30) - FY(-10)}" fill="#003300"/><line x1="40" x2="${W - 10}" y1="${FY(0)}" y2="${FY(0)}" stroke="#444"/>`;
+  s += line('ctl', '#0ff') + line('atl', '#f0f');
+  s += `<polyline fill="none" stroke="#ff0" stroke-width="2" points="${fm.map((v, i) => X(i).toFixed(1) + ',' + FY(v).toFixed(1)).join(' ')}"/>`;
+  fs.forEach((x, i) => { if (x.d.slice(8) === '01') s += `<text x="${X(i)}" y="${H - 6}" fill="#888" font-size="12" ${SVGF}>${new Date(x.d + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: 'UTC', month: 'short'})}</text>`; });
+  s += `<text x="44" y="${top + 12}" fill="#0ff" font-size="12" ${SVGF}>FITNESS</text><text x="124" y="${top + 12}" fill="#f0f" font-size="12" ${SVGF}>FATIGUE</text><text x="44" y="${mid + 18}" fill="#ff0" font-size="12" ${SVGF}>FORM (green band = optimal -10 to -30)</text>`;
+  return s + '</svg>';
+}
+function heatMap(hm_) {   /* one square per day, columns = weeks starting Monday */
+  const L = (hm_ || {}).load || [], st = (hm_ || {}).start;
+  if (!L.length || !st) return '';
+  const cs = 15, gp = 3, wk = Math.ceil(L.length / 7), W = 26 + wk * (cs + gp), H = 7 * (cs + gp) + 18, t0 = Date.parse(st + 'T12:00:00Z');
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;max-width:${W * 2}px">`;
+  ['M', '', 'W', '', 'F', '', 'S'].forEach((t, i) => { if (t) s += `<text x="2" y="${i * (cs + gp) + cs - 3}" fill="#888" font-size="11" ${SVGF}>${t}</text>`; });
+  let lastM = '';
+  L.forEach((v, i) => {
+    const c = Math.floor(i / 7), r = i % 7, x = 22 + c * (cs + gp), y = r * (cs + gp), day = new Date(t0 + i * 86400000).toISOString().slice(0, 10);
+    const col = v <= 0 ? '#161616' : v < 20 ? '#0b4a0b' : v < 45 ? '#0a8a0a' : v < 80 ? '#0d0' : '#ff0';
+    s += `<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="${col}"><title>${shortDay(day)}: load ${v}</title></rect>`;
+    const mo = new Date(t0 + i * 86400000).toLocaleDateString('en-GB', {timeZone: 'UTC', month: 'short'});
+    if (r === 0 && mo !== lastM) { s += `<text x="${x}" y="${H - 3}" fill="#888" font-size="11" ${SVGF}>${mo}</text>`; lastM = mo; }
+  });
+  return s + '</svg>';
+}
+function zoneBar(z) {
+  const t = z ? z[0] + z[1] + z[2] : 0;
+  if (!t) return '<div class="d sm">No zone data in these sessions.</div>';
+  const p = z.map(v => v / t * 100), col = ['#0a0', '#cc0', '#d22'], nm = ['Easy Z1-Z2', 'Moderate Z3', 'Hard Z4+'];
+  return `<div style="display:flex;height:14px;border:1px solid #333;margin:4px 0">${p.map((v, i) => v > 0 ? `<div title="${nm[i]} ${v.toFixed(0)}%" style="width:${v}%;background:${col[i]}"></div>` : '').join('')}</div>
+    <div class="sm"><span class="g">easy ${p[0].toFixed(0)}%</span> &middot; <span class="y">moderate ${p[1].toFixed(0)}%</span> &middot; <span class="r">hard ${p[2].toFixed(0)}%</span></div>`;
+}
+function pctBar(v, col) { const p = Math.max(0, Math.min(100, v || 0)); return `<div style="height:10px;background:#1a1a1a;border:1px solid #333"><div style="height:100%;width:${p}%;background:${col}"></div></div>`; }
+const FEEL = {1: 'Strong', 2: 'Good', 3: 'Normal', 4: 'Poor', 5: 'Weak'};
+RENDER.training = d => {
+  if (!Array.isArray(d.weeks)) {
+    return `<div class="box"><h3 class="y">Not connected yet</h3>
+      <div>This page reads your training from <a href="https://intervals.icu/" target="_blank" rel="noopener">intervals.icu</a>, which Garmin Connect fills automatically. Three steps:</div>
+      <ol><li>Create a free intervals.icu account and connect Garmin Connect (Settings, Connections).</li>
+      <li>intervals.icu Settings, Developer Settings at the bottom: copy the API key.</li>
+      <li>GitHub, repo <b>teletext-src</b>, Settings, Secrets and variables, Actions, New repository secret: name <b class="y">INTERVALS_API_KEY</b>, value the key.</li></ol>
+      <div class="d sm">${esc(d.refresh_error || '')}</div></div>`;
+  }
+  const ws = d.weeks, cur = ws[ws.length - 1], fs = d.fitness || [], last = fs[fs.length - 1] || {};
+  const form = isNum(last.ctl) && isNum(last.atl) ? last.ctl - last.atl : null, [fc, ft] = formBand(form);
+  const g = d.goal, n = g ? daysTo(g.date) : null, P = d.periods || {}, S = d.sport || {}, thr = d.thresholds || {}, eftp = d.eftp || {};
+  const rd = d.race_dist || {swim: 1.9, bike: 90, run: 21.1};
+  /* top cards */
+  const thrLine = [
+    isNum((thr.bike || {}).ftp) ? `<div class="kv"><span class="y">Bike FTP</span><b>${thr.bike.ftp} W${isNum(thr.bike.indoor_ftp) && thr.bike.indoor_ftp !== thr.bike.ftp ? ` <span class="d sm">(indoor ${thr.bike.indoor_ftp})</span>` : ''}</b></div>` : '',
+    isNum(eftp.bike) ? `<div class="kv"><span class="y">Bike eFTP</span><b>${eftp.bike} W</b></div>` : '',
+    isNum((thr.run || {}).pace) ? `<div class="kv"><span class="g">Run threshold</span><b>${mmss(1000 / thr.run.pace)}/km</b></div>` : '',
+    isNum((thr.swim || {}).pace) ? `<div class="kv"><span class="c">Swim CSS</span><b>${mmss(100 / thr.swim.pace)}/100m</b></div>` : ''].join('');
+  const cards = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:4px">
+      <div class="box"><h3 class="c">Fitness</h3><div class="big c">${f(last.ctl, 0)}</div><div class="d sm">42-day training load (CTL)</div></div>
+      <div class="box"><h3 class="m">Fatigue</h3><div class="big m">${f(last.atl, 0)}</div><div class="d sm">7-day training load (ATL)</div></div>
+      <div class="box"><h3 class="y">Form</h3><div class="big ${fc}">${isNum(form) ? (form > 0 ? '+' : '') + form.toFixed(0) : '--'}</div><div class="${fc} sm">${ft}</div></div>
+      <div class="box"><h3 class="w">Ramp rate</h3><div class="big w">${isNum(d.ramp) ? (d.ramp > 0 ? '+' : '') + f(d.ramp, 1) : '--'}</div><div class="d sm">fitness change, last 7 days</div></div>
+      <div class="box"><h3 class="y">Thresholds</h3>${thrLine || '<div class="d sm">None set in intervals.icu (Settings, sport settings).</div>'}</div>
+      <div class="box race star"><h3 class="y">${g ? esc(g.name) : 'Goal race'}</h3><div class="cd y">${isNum(n) && n >= 0 ? n : '--'}</div><div class="sm">${isNum(n) && n >= 0 ? `days, ${Math.floor(n / 7)} weeks, ${dayOnly(g.date)}` : 'no dated goal race'}</div></div></div>`;
+  /* totals by period */
+  const PER = [['week', 'This week'], ['lastweek', 'Last week'], ['d28', 'Last 4 weeks'], ['month', 'This month'], ['year', 'This year'], ['y365', 'Last 12 months']];
+  const totRows = PER.filter(([k]) => P[k]).map(([k, nm]) => { const p = P[k];
+    return `<tr${k === 'week' ? ' class="me"' : ''}><td><b>${nm}</b></td>${ALLSP.map(sp => `<td class="n" style="color:${SPC[sp]}">${p[sp].n ? hm(p[sp].h) + ` <span class="d sm">${sp === 'other' ? p[sp].n + 'x' : kmTxt(sp, p[sp].km)}</span>` : '<span class="d">--</span>'}</td>`).join('')}
+      <td class="n"><b>${hm(p.all.h)}</b></td><td class="n">${p.all.n}</td><td class="n d">${p.all.elev ? p.all.elev + ' m' : '--'}</td><td class="n y">${p.all.load}</td></tr>`; }).join('');
+  const totals = `<div class="box" style="margin-top:12px"><h3 class="y">Totals</h3><table><tr><th></th>${ALLSP.map(sp => `<th class="n" style="color:${SPC[sp]}">${SPN[sp]}</th>`).join('')}<th class="n">Total</th><th class="n">Sessions</th><th class="n">Climb</th><th class="n">Load</th></tr>${totRows}</table></div>`;
+  /* per-sport, last 28 days */
+  const sportBox = sp => { const x = S[sp]; if (!x) return '';
+    const L = x.long8 || {}, wk = x.weekly_km || [];
+    const avg4 = (x.weekly_h || []).slice(-5, -1), a4 = avg4.length ? avg4.reduce((a, b) => a + b, 0) / avg4.length : null;
+    return `<div class="box"><h3 style="color:${SPC[sp]}">${SPN[sp]}, last 4 weeks</h3>
+      <div class="kv"><span>Sessions</span><b>${x.n}</b></div>
+      <div class="kv"><span>Time</span><b>${hm(x.h)} <span class="d sm">(${hm(a4)}/wk before this week)</span></b></div>
+      <div class="kv"><span>Distance</span><b>${kmTxt(sp, x.km)}</b></div>
+      <div class="kv"><span>${sp === 'bike' ? 'Average speed' : 'Average pace'}</span><b>${paceTxt(sp, x.kmh)}</b></div>
+      ${sp === 'bike' ? `<div class="kv"><span>Average power</span><b>${isNum(x.avg_w) ? x.avg_w + ' W' : '--'}</b></div>` : ''}
+      ${sp !== 'swim' ? `<div class="kv"><span>Climb</span><b>${x.elev ? x.elev + ' m' : '--'}</b></div>` : ''}
+      <div class="kv"><span>Load</span><b class="y">${x.load}</b></div>
+      <div class="kv"><span>Longest, 8 weeks</span><b>${kmTxt(sp, L.km)}${L.km_date ? ` <span class="d sm">${shortDay(L.km_date)}</span>` : ''} &middot; ${isNum(L.min) ? L.min + ' min' : '--'}</b></div>
+      <div class="sm" style="margin-top:6px">Intensity</div>${zoneBar(x.zones)}
+      <div class="sm" style="margin-top:6px">${sp === 'swim' ? 'Metres' : 'Km'} per week, ${wk.length} weeks</div>${spark(wk.map(v => sp === 'swim' ? v * 1000 : v), 300, 34, SPC[sp], 'no history yet')}</div>`; };
+  /* race readiness: longest single session in the last 8 weeks vs the race distance */
+  const ready = TRI.map(sp => { const L = (S[sp] || {}).long8 || {}, km = L.km || 0, pc = rd[sp] ? km / rd[sp] * 100 : 0;
+    return `<div style="margin:6px 0"><div class="kv"><span style="color:${SPC[sp]}"><b>${SPN[sp]}</b> ${kmTxt(sp, rd[sp])}</span><b>${kmTxt(sp, km)} <span class="${pc >= 100 ? 'g' : pc >= 60 ? 'y' : 'r'}">${pc.toFixed(0)}%</span></b></div>${pctBar(pc, SPC[sp])}</div>`; }).join('');
+  /* best efforts, 90 days */
+  const B = d.best || {}, lab = {5: '5 s', 60: '1 min', 300: '5 min', 1200: '20 min', 3600: '1 h', 100: '100 m', 400: '400 m', 1000: '1 km', 1900: '1.9 km', 5000: '5 km', 10000: '10 km', 21097: 'Half'};
+  const bestCol = (sp, unit) => { const rows = B[sp] || [];
+    if (!rows.some(r => isNum(r[1]))) return `<div class="box"><h3 style="color:${SPC[sp]}">${SPN[sp]}</h3><div class="d sm">No ${sp === 'bike' ? 'power' : 'pace'} data in the last 90 days.</div></div>`;
+    return `<div class="box"><h3 style="color:${SPC[sp]}">${SPN[sp]}</h3><table>${rows.map(([k, v]) => `<tr><td>${lab[k] || k}</td><td class="n"><b>${!isNum(v) ? '--' : unit === 'W' ? v + ' W' : mmss(v)}</b></td><td class="n d sm">${isNum(v) && unit !== 'W' ? (sp === 'run' ? mmss(v / (k / 1000)) + '/km' : mmss(v / (k / 100)) + '/100m') : ''}</td></tr>`).join('')}</table></div>`; };
+  /* plan */
+  const plan = d.plan || [], today = todayMadrid();
+  const planDone = plan.filter(p => p.cat === 'WORKOUT' && p.date >= cur.start && p.date <= today).reduce((a, p) => a + (p.load || 0), 0);
+  const planWeek = plan.filter(p => p.cat === 'WORKOUT' && p.date >= cur.start && p.date < new Date(Date.parse(cur.start + 'T12:00:00Z') + 7 * 86400000).toISOString().slice(0, 10)).reduce((a, p) => a + (p.load || 0), 0);
+  const next = plan.filter(p => p.date >= today);
+  const planBox = `<div class="box"><h3 class="y">Planned, next 14 days</h3>${next.length ? `<table>${next.map(p => `<tr${p.date === today ? ' class="me"' : ''}><td class="d">${shortDay(p.date)}</td><td>${p.cat.startsWith('RACE') ? '<span class="chip y">RACE</span>' : ''}<span style="color:${SPC[p.sport]}">${esc(p.type)}</span></td><td class="wrapc">${esc(p.name)}</td><td class="n">${isNum(p.min) ? p.min + ' min' : ''}</td><td class="n y">${p.load || ''}</td></tr>`).join('')}</table>` : '<div class="d sm">Nothing planned in the intervals.icu calendar. Add workouts there (or a plan) and they show here.</div>'}
+      ${planWeek ? `<div class="sm" style="margin-top:6px">This week: planned load <b class="y">${planWeek}</b> &middot; done <b class="${cur.load >= planDone ? 'g' : 'r'}">${cur.load}</b> (plan so far ${planDone})</div>` : ''}</div>`;
+  /* sessions */
+  const rec = (d.recent || []).map(r => `<tr><td class="d">${shortDay(r.date)}</td><td style="color:${SPC[r.sport]}">${esc(r.type)}${r.indoor ? ' <span class="chip w">IN</span>' : ''}${r.race ? ' <span class="chip y">RACE</span>' : ''}</td>
+      <td class="n">${hm(r.min / 60)}</td><td class="n">${kmTxt(r.sport, r.km)}</td><td class="n">${r.sport === 'other' ? '' : paceTxt(r.sport, r.kmh)}</td>
+      <td class="n">${isNum(r.w) ? r.w + (isNum(r.np) ? '/' + r.np : '') + ' W' : ''}</td><td class="n">${isNum(r.if) ? f(r.if, 2) : ''}</td>
+      <td class="n d">${r.elev ? r.elev + ' m' : ''}</td><td class="n y">${r.load || ''}</td><td class="n">${isNum(r.rpe) ? r.rpe : ''}</td><td>${FEEL[r.feel] || ''}</td>
+      <td class="n ${isNum(r.dec) ? (Math.abs(r.dec) <= 5 ? 'g' : 'r') : ''}">${isNum(r.dec) ? f(r.dec, 1) + '%' : ''}</td></tr>`).join('');
+  const sess = `<div class="box" style="margin-top:12px"><h3 class="y">Last ${(d.recent || []).length} sessions</h3>${rec ? `<table><tr><th>Date</th><th>Type</th><th class="n">Time</th><th class="n">Dist</th><th class="n">Pace / speed</th><th class="n">Avg/NP</th><th class="n">IF</th><th class="n">Climb</th><th class="n">Load</th><th class="n">RPE</th><th>Feel</th><th class="n">Decoupl.</th></tr>${rec}</table>
+      <div class="d sm" style="margin-top:6px">IN = indoor. IF = intensity factor (NP / FTP). RPE and feel only when you log them. Decoupling = how much pace or power drifted against effort in the second half; under 5% (green) means a solid aerobic base for that duration.</div>` : '<div class="d">No sessions in the last 12 months.</div>'}</div>`;
+  /* consistency */
+  const H = (d.heat || {}).load || [], d28 = H.slice(-28), days28 = d28.filter(v => v > 0).length;
+  let streak = 0; for (let i = ws.length - 2; i >= 0; i--) { if (ALLSP.reduce((a, s) => a + ws[i][s].n, 0) >= 3) streak++; else break; }
+  const months = d.months || [];
+  return `${cards}${totals}
+    <div class="h y">Hours per week, last ${ws.length} weeks <span class="sm"><span class="c">swim</span> <span class="y">bike</span> <span class="g">run</span> <span class="d">other</span></span></div>
+    ${stackBars(ws, w => new Date(w.start + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: 'UTC', day: '2-digit', month: 'short'}), true)}
+    <div class="grid g3" style="margin-top:12px">${TRI.map(sportBox).join('')}</div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="box"><h3 class="y">${g ? esc(g.name) : '70.3'}: longest session, last 8 weeks vs race distance</h3>${ready}
+        <div class="d sm" style="margin-top:6px">One session each. It shows how far the long swim, ride and run are from race distance; it is not a readiness score.</div></div>
+      <div class="box"><h3 class="y">Consistency</h3>
+        <div class="kv"><span>Days trained, last 28</span><b>${days28} / 28</b></div>
+        <div class="kv"><span>Weeks in a row with 3+ sessions</span><b>${streak}</b></div>
+        <div class="sm" style="margin:6px 0">Training load per day, last ${Math.ceil(H.length / 7)} weeks <span class="d">(darker = lighter day, yellow = 80+)</span></div>${heatMap(d.heat)}</div></div>
+    <div class="h y">Best efforts, last 90 days</div>
+    <div class="grid g3">${bestCol('bike', 'W')}${bestCol('run', 's')}${bestCol('swim', 's')}</div>
+    <div class="grid g2" style="margin-top:12px">${planBox}
+      <div class="box"><h3 class="y">Hours per month, last 12 months</h3>${stackBars(months, x => new Date(x.m + '-15T12:00:00Z').toLocaleDateString('en-GB', {timeZone: 'UTC', month: 'short'}), true)}</div></div>
+    ${sess}
+    <div class="h y">Fitness, fatigue and form, last ${fs.length} days</div>${fitChart(fs)}
+    <details class="d sm" style="margin-top:8px"><summary>About this page</summary>From intervals.icu, which Garmin Connect syncs to. This site is public, so it shows training data only: no activity names, times of day, maps, heart-rate values, weight, sleep or HRV. Intensity is the share of time in zones (power zones on the bike when there is power, otherwise heart-rate zones, otherwise pace zones), grouped as easy Z1-Z2, moderate Z3 and hard Z4+. Fitness, fatigue, form, ramp rate, eFTP and best efforts are intervals.icu's own figures; the form bands are the ones intervals.icu uses. Indoor rides without distance are left out of average speed. ${d.activities_read != null ? d.activities_read + ' activities read for the last 12 months.' : ''}</details>`;
+};
+
+/* ---------- P300 RACES ---------- */
+function raceFlags(r) {
+  const fl = [];
+  if (r.star) fl.push('<span class="chip y">STAR RACE</span>');
+  if (!r.date) fl.push('<span class="chip r">2027 DATE NOT PUBLISHED</span>');
+  if (/sold out/i.test(r.note || '')) fl.push('<span class="chip r">SOLD OUT</span>');
+  if (/no 100 km/i.test(r.note || '')) fl.push('<span class="chip m">NO 100 KM ROUTE</span>');
+  if (/first edition/i.test(r.note || '')) fl.push('<span class="chip c">FIRST EDITION</span>');
+  return fl.join('');
+}
+function weatherTxt(w) {
+  if (!w) return '<span class="d">No weather yet.</span>';
+  const rain = isNum(w.kind === 'forecast' ? w.rain : w.wet_days) ? ` &middot; rain ${w.kind === 'forecast' ? w.rain : w.wet_days}%` : '';
+  return `<span class="${w.kind === 'forecast' ? 'g' : 'd'}">${w.kind === 'forecast' ? 'Forecast' : 'Usually'}</span> <span class="y">${f(w.tmax, 0)}&deg;</span>/<span class="c">${f(w.tmin, 0)}&deg;</span>${rain}`;
+}
+function timeline(rs) {
+  const W = 1200, H = 92, t0 = Date.parse(todayMadrid() + 'T00:00:00Z');
+  const ds = rs.map(r => Date.parse((r.date || r.weather_date) + 'T00:00:00Z')).filter(isNum);
+  if (!ds.length) return '';
+  const end = new Date(Math.max(...ds) + 20 * 86400000), span = end - t0;
+  const x = ms => 20 + (ms - t0) / span * (W - 40);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;background:#050505;border:1px solid #333"><line x1="20" y1="50" x2="${W - 20}" y2="50" stroke="#22f" stroke-width="4"/>`;
+  const m = new Date(t0); m.setUTCDate(1);
+  for (let k = 0; k < 14; k++) {
+    const ms = Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + k + 1, 1);
+    if (ms > end) break;
+    s += `<line x1="${x(ms)}" y1="44" x2="${x(ms)}" y2="56" stroke="#888"/><text x="${x(ms) + 3}" y="70" fill="#888" font-size="12" font-family="Consolas,monospace">${new Date(ms).toLocaleDateString('en-GB', {timeZone: 'UTC', month: 'short'})}</text>`;
+  }
+  s += `<text x="20" y="88" fill="#ff0" font-size="12" font-family="Consolas,monospace">TODAY</text>`;
+  rs.forEach((r, i) => {
+    const ms = Date.parse((r.date || r.weather_date) + 'T00:00:00Z'), cx = x(ms), up = i % 2 === 0;
+    const col = r.star ? '#ff0' : '#0ff';
+    s += r.date ? `<circle cx="${cx}" cy="50" r="${r.star ? 9 : 6}" fill="${col}"/>` : `<circle cx="${cx}" cy="50" r="6" fill="none" stroke="#f33" stroke-width="2" stroke-dasharray="3 2"/>`;
+    s += `<text x="${cx}" y="${up ? 28 : 86}" fill="${r.date ? col : '#f33'}" font-size="12" font-weight="bold" text-anchor="middle" font-family="Consolas,monospace">${esc(r.short || r.name.split(' ').slice(0, 3).join(' '))}${r.date ? '' : ' ?'}</text>`;
+  });
+  return s + '</svg>';
+}
+RENDER.races = d => {
+  const rs = (d.races || []).slice().sort((a, b) => (a.date || a.weather_date).localeCompare(b.date || b.weather_date));
+  const SHORT = {backyard: 'Backyard Vilabella', mitjabcn: 'Mitja BCN', mitjagirona: 'Mitja Girona', gflloret: 'GF Lloret', im703: 'IM 70.3 Valencia', volcano: 'Volcano Half'};
+  rs.forEach(r => { r.short = SHORT[r.id]; });
+  const cards = rs.map(r => {
+    const n = daysTo(r.date);
+    const cd = r.date ? `<div class="cd ${r.star ? 'y' : 'c'}">${n >= 0 ? n : 'done'}</div><div class="sm">${n >= 0 ? 'days to go (' + Math.floor(n / 7) + ' weeks)' : 'race day passed'}</div>`
+                      : `<div class="cd r">?</div><div class="sm">days to go, date not out</div>`;
+    return `<div class="box race ${r.star ? 'star' : ''}"><div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="min-width:110px;text-align:center">${cd}</div>
+      <div style="flex:1;min-width:0"><h3 class="${r.star ? 'y' : 'c'}" style="font-size:17px">${esc(r.name)}</h3>${raceFlags(r)}
+        <div><b>${r.date ? dayOnly(r.date) : 'Date to be announced'}</b> &middot; ${esc(r.distance)}</div>
+        <div class="sm" style="margin:4px 0">${weatherTxt(r.weather)} ${link(r.url, 'Official page')}</div>
+      </div></div></div>`;
+  }).join('');
+  const lim = new Date(Date.parse(todayMadrid() + 'T00:00:00Z') + 60 * 86400000).toISOString().slice(0, 10);
+  const cat = (d.catalonia || []).filter(e => (e.date || '') < lim);
+  const types = [...new Set(cat.map(e => e.type))].sort();
+  const calRows = cat.map(e => `<tr data-type="${esc(e.type)}"><td>${dayOnly(e.date)}</td><td class="c">${esc(e.type)}</td><td class="wrapc">${link(e.url, e.title)}</td><td class="n d sm">${daysTo(e.date)} d</td></tr>`).join('');
+  return `<div class="h y" style="margin-top:4px">Season timeline</div>${timeline(rs)}
+    <div class="grid g2" style="margin-top:12px">${cards}</div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="box"><h3 class="y">Catalonia, next 60 days (FCTRI)</h3>
+        <div style="margin-bottom:6px">Type: <select id="ctype"><option value="">All (${cat.length})</option>${types.map(t => `<option>${esc(t)}</option>`).join('')}</select></div>
+        <div style="max-height:620px;overflow-y:auto">${cat.length ? `<table id="ctab"><tr><th>Date</th><th>Type</th><th>Event</th><th class="n">In</th></tr>${calRows}</table>` : '<div class="d">Calendar not available this refresh.</div>'}</div>
+        <div class="d sm">${link('https://www.triatlo.org/calendari', 'Full calendar')}</div></div>
+      <div class="box"><h3 class="y">News</h3>${newsList(d.news, 8)}</div>
+    </div>`;
+};
+PAGES[300].after = () => {
+  const s = document.getElementById('ctype');
+  if (!s) return;
+  const apply = () => document.querySelectorAll('#ctab tr[data-type]').forEach(tr => { tr.style.display = !s.value || tr.dataset.type === s.value ? '' : 'none'; });
+  if (window._ctype && [...s.options].some(o => o.value === window._ctype)) { s.value = window._ctype; apply(); }   /* keep the filter across auto-refreshes */
+  s.onchange = () => { window._ctype = s.value; apply(); };
+};
+
+/* ---------- P400 SPAIN & CATALONIA ---------- */
+const FUELN = {g95: 'Petrol 95', diesel: 'Diesel', g98: 'Petrol 98'};
+function powerChart(day, p) {
+  const hs = p.hours || [];
+  if (!hs.length) return '';
+  const W = 600, H = 150, mx = Math.max(...hs.map(h => h[1])), bw = (W - 30) / hs.length;
+  const nowH = new Date().toLocaleTimeString('en-GB', {timeZone: TZ, hour: '2-digit', hour12: false}) + ':00';
+  const isToday = day === todayMadrid();
+  let s = `<svg viewBox="0 0 ${W} ${H + 18}" width="100%" style="display:block">`;
+  hs.forEach((h, i) => {
+    const bh = Math.max(1, h[1] / mx * (H - 10)), x = 26 + i * bw;
+    const col = h[1] <= p.avg * 0.8 ? '#0f0' : h[1] >= p.avg * 1.2 ? '#f33' : '#ff0';
+    const on = isToday && h[0] === nowH;
+    s += `<rect x="${x.toFixed(1)}" y="${(H - bh).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${bh.toFixed(1)}" fill="${col}" ${on ? 'stroke="#fff" stroke-width="2"' : ''}><title>${h[0]}  ${h[1].toFixed(1)} EUR/MWh</title></rect>`;
+    if (i % 3 === 0) s += `<text x="${x.toFixed(1)}" y="${H + 14}" fill="#888" font-size="11" font-family="Consolas,monospace">${h[0].slice(0, 2)}</text>`;
+  });
+  const ay = H - p.avg / mx * (H - 10);
+  s += `<line x1="26" x2="${W}" y1="${ay.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="#0ff" stroke-dasharray="4 3"/><text x="0" y="${(ay + 4).toFixed(1)}" fill="#0ff" font-size="11" font-family="Consolas,monospace">avg</text>`;
+  return s + '</svg>';
+}
+RENDER.spain = d => {
+  const fu = d.fuel || {}, zones = fu.zones || {}, tr = fu.trend || {};
+  const zn = ['Spain', 'Catalonia', 'Girona province'].filter(z => zones[z]).concat(Object.keys(zones).filter(z => !['Spain', 'Catalonia', 'Girona province'].includes(z)));
+  const fuelTab = zn.length ? `<table><tr><th>Fuel</th>${zn.map(z => `<th class="n">${esc(z)}</th>`).join('')}</tr>` +
+    Object.keys(FUELN).map(k => `<tr><td class="c">${FUELN[k]}</td>${zn.map(z => { const v = (zones[z] || {})[k];
+      return `<td class="n">${v ? `<b class="y">${f(v.avg, 3)}</b> <span class="d sm">${f(v.min, 3)}-${f(v.max, 3)}</span>` : '--'}</td>`; }).join('')}</tr>`).join('') + '</table>'
+    : '<div class="d">Fuel prices not available this refresh.</div>';
+  const ZR = ['Spain', 'Catalonia', 'Girona province'], FR = Object.keys(FUELN);
+  const rank = k => { const [z, fl] = k.split('|');
+    return (ZR.indexOf(z) < 0 ? 9 : ZR.indexOf(z)) * 10 + (FR.indexOf(fl) < 0 ? 9 : FR.indexOf(fl)); };
+  const tk = Object.keys(tr).sort((a, b) => rank(a) - rank(b));
+  const trend = tk.map(k => { const [z, fl] = k.split('|'), t = tr[k];
+    return `<div class="kv"><span>${esc(z)} ${FUELN[fl] || esc(fl)}</span><span>${spark(t.spark, 110, 20, '#ff0', 'builds daily')} 7d ${chg(t.chg7)} &middot; 30d ${chg(t.chg30)}</span></div>`; }).join('');
+  const near = k => ((fu.near || {})[k] || []).map(n => `<tr><td class="n y"><b>${f(n[k], 3)}</b></td><td>${esc(n.brand)}</td><td class="wrapc">${esc(n.town)}, <span class="d sm">${esc(n.addr)}</span></td><td class="n d">${f(n.km, 1)} km</td></tr>`).join('') || '<tr><td class="d">--</td></tr>';
+
+  const pw = d.power || {}, days = Object.keys(pw).sort();
+  const power = days.length ? days.map(day => { const p = pw[day];
+    return `<div style="margin-bottom:8px"><div><b>${dayOnly(day)}</b> &middot; average <b class="y">${f(p.avg, 1)}</b> EUR/MWh (${f(p.avg / 1000, 3)} EUR/kWh)
+      &middot; cheapest <span class="g">${esc((p.min || [])[0])} ${f((p.min || [])[1], 1)} EUR/MWh</span> &middot; dearest <span class="r">${esc((p.max || [])[0])} ${f((p.max || [])[1], 1)} EUR/MWh</span></div>${powerChart(day, p)}</div>`; }).join('')
+    : '<div class="d">Electricity prices not available this refresh.</div>';
+
+  const cpi = d.cpi || [];
+  const cpiTab = cpi.length ? `<table><tr><th>Item (y/y)</th><th class="n">Spain</th><th>13 months</th><th class="n">Catalonia</th><th>13 months</th></tr>` +
+    cpi.map(c => `<tr><td>${esc(c.label)}</td><td class="n">${chg((c.spain || {}).v)}</td><td>${spark((c.spain || {}).series, 90, 20, '#ff0', '')}</td>
+      <td class="n">${chg((c.cat || {}).v)}</td><td>${spark((c.cat || {}).series, 90, 20, '#0ff', '')}</td></tr>`).join('') +
+    `</table><div class="d sm">INE, ${esc(((cpi[0] || {}).spain || {}).p || '')}. Annual rate of change. "--" = that item is not in the INE table used for the column (regional data comes in broad groups only, so no petrol or bicycles for Catalonia).</div>` : '<div class="d">CPI not available this refresh.</div>';
+
+  const jobs = d.jobs || {};
+  const jobsBox = ['Spain', 'Catalonia'].filter(z => jobs[z]).map(z => { const j = jobs[z];
+    return `<div class="kv"><span>${esc(z)}</span><span><b class="big ${z === 'Catalonia' ? 'c' : 'y'}">${f(j.v, 2)}%</b> ${spark(j.series, 120, 24, z === 'Catalonia' ? '#0ff' : '#ff0')}</span></div>`; }).join('');
+  const jp = (jobs.Spain || jobs.Catalonia || {}).p || '';
+
+  const fx = d.fx || {};
+  const fxBox = Object.keys(fx).map(k => { const x = fx[k];
+    return `<div class="kv"><span>1 EUR = <b class="y">${f(x.v, 4)}</b> ${esc(k)}</span><span>${spark(x.series, 110, 20, '#0f0')} 30d ${chg(x.chg30, '%', false)}</span></div>`; }).join('');
+  const fxDate = (Object.values(fx)[0] || {}).date || '';
+
+  const wx = (d.weather || []).map(w => `<div class="box"><h3 class="c">${esc(w.place)}</h3>
+    <div><span class="big y">${f(w.now, 0)}&deg;</span> ${esc(w.now_txt)} &middot; wind ${f(w.wind, 0)} km/h</div>
+    <div class="wx" style="margin-top:6px">${(w.days || []).slice(0, 5).map(x => `<div><b>${new Date(x.d + 'T12:00:00Z').toLocaleDateString('en-GB', {timeZone: 'UTC', weekday: 'short'})}</b><br>
+      <span class="y">${f(x.max, 0)}</span>/<span class="c">${f(x.min, 0)}</span><br><span class="sm">${esc(x.txt)}</span><br><span class="sm ${x.rain >= 50 ? 'r' : 'd'}">${isNum(x.rain) ? x.rain + '%' : '--'}</span></div>`).join('')}</div></div>`).join('');
+
+  return `<div class="grid g2" style="margin-top:4px">
+      <div class="box"><h3 class="y">Fuel, average pump price (EUR/L)</h3>${fuelTab}
+        <div class="d sm">MITECO, every station in Spain, published ${esc(fu.stamp || '--')}. Cheapest-dearest in grey.</div>
+        <div class="h c" style="font-size:14px">Evolution (${fu.tracked_days || 0} day${fu.tracked_days === 1 ? '' : 's'} recorded)</div>${trend}</div>
+      <div class="box"><h3 class="y">Cheapest within 15 km of Santa Coloma de Farners</h3>
+        <div class="c sm">PETROL 95</div><table>${near('g95')}</table>
+        <div class="c sm" style="margin-top:8px">DIESEL</div><table>${near('diesel')}</table></div>
+    </div>
+    <div class="grid g2" style="margin-top:12px">
+      <div class="box"><h3 class="y">Electricity, regulated tariff PVPC 2.0TD by hour</h3>${power}
+        <div class="d sm">Red Electrica. Green = at least 20% below the day's average, red = 20% above. White outline = this hour.</div></div>
+      <div class="box"><h3 class="y">Inflation, Spain vs Catalonia</h3>${cpiTab}</div>
+    </div>
+    <div class="grid g3" style="margin-top:12px">
+      <div class="box"><h3 class="y">Unemployment rate (EPA)</h3>${jobsBox || '<div class="d">Not available this refresh.</div>'}<div class="d sm">INE, ${esc(jp)}. Quarterly.</div></div>
+      <div class="box"><h3 class="y">Euro exchange rates</h3>${fxBox || '<div class="d">Not available this refresh.</div>'}<div class="d sm">ECB reference rates via Frankfurter, ${esc(fxDate)}. Green = the euro buys more than 30 days ago.</div></div>
+      <div class="box"><h3 class="y">Mortgage: Euribor</h3><div class="d">Not shown. The ECB data portal failed certificate checks when this app was built, so it is not fetched.
+        ${link('https://www.euribor-rates.eu/en/current-euribor-rates/', 'Check it here')}.</div></div>
+    </div>
+    <div class="h y">Weather</div><div class="grid g3">${wx || '<div class="d">Weather not available this refresh.</div>'}</div>
+    <div class="h y">Catalonia headlines</div><div class="box">${newsList(d.news, 6)}</div>`;
+};
+
+/* ---------- P500 CONCERTS ---------- */
+const CF = {mode: 'week', genre: '', free: false, q: '', all: false};   /* filter state survives the 5-min auto-refresh */
+function concDay(ymd) {
+  const [y, m, dd] = ymd.split('-').map(Number), x = new Date(Date.UTC(y, m - 1, dd, 12));
+  return {wd: x.getUTCDay(), txt: x.toLocaleDateString('en-GB', {timeZone: 'UTC', weekday: 'short', day: '2-digit', month: 'short'}) + (y !== Number(todayMadrid().slice(0, 4)) ? ' ' + y : '')};
+}
+function concFilter(list) {
+  const t7 = new Date(Date.parse(todayMadrid() + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10), q = CF.q.trim().toLowerCase();
+  return list.filter(e => (CF.mode === 'week' ? e.date < t7 : CF.mode === 'near' ? e.near : CF.mode === 'big' ? e.big : true)
+    && (!CF.genre || (e.genre || 'Not given') === CF.genre) && (!CF.free || e.price === 'Free')
+    && (!q || [e.name, e.venue, e.town, e.comarca].join(' ').toLowerCase().includes(q)));
+}
+function concRow(e) {
+  const tags = (e.genre ? `<span class="chip c">${esc(e.genre)}</span>` : '') + (e.near ? '<span class="chip g">NEAR HOME</span>' : '') + (e.big ? '<span class="chip m">BIG VENUE</span>' : '');
+  const run = e.until ? `<span class="d sm"> &middot; ${e.since ? 'since ' + concDay(e.since).txt + ', ' : ''}until ${concDay(e.until).txt}</span>` : '';
+  return `<div class="crow"><span class="ct y">${esc(e.time || '--:--')}</span>
+    <div class="cb"><b>${link(e.url, e.name)}</b> ${tags}<br><span class="c">${esc(e.venue || '?')}</span>, ${esc(e.town || '')}${isNum(e.km) ? `<span class="d sm"> &middot; ${Math.round(e.km)} km</span>` : ''}${run}</div>
+    <span class="cp ${e.price === 'Free' ? 'g' : 'w'}">${esc(e.price || '?')}</span></div>`;
+}
+function concDensity(list) {   /* concerts per day, next 60 days; green = near home, magenta = big venue */
+  const t0 = Date.parse(todayMadrid() + 'T00:00:00Z'), N = 60, W = 1200, H = 70, bw = (W - 20) / N, c = [];
+  for (let i = 0; i < N; i++) c.push({all: 0, near: 0, big: 0, ymd: new Date(t0 + i * 86400000).toISOString().slice(0, 10)});
+  list.forEach(e => { const i = Math.round((Date.parse(e.date + 'T00:00:00Z') - t0) / 86400000); if (i >= 0 && i < N) { c[i].all++; if (e.near) c[i].near++; if (e.big) c[i].big++; } });
+  const mx = Math.max(1, ...c.map(x => x.all));
+  let s = `<svg viewBox="0 0 ${W} ${H + 18}" width="100%" style="display:block;background:#050505;border:1px solid #333">`;
+  c.forEach((x, i) => {
+    const X = 10 + i * bw, h = x.all / mx * (H - 8), hb = x.big / mx * (H - 8), hn = x.near / mx * (H - 8), wd = concDay(x.ymd).wd;
+    if (wd === 0 || wd === 6) s += `<rect x="${X.toFixed(1)}" y="0" width="${bw.toFixed(1)}" height="${H}" fill="#151515"/>`;
+    s += `<rect x="${(X + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="#ff0"><title>${concDay(x.ymd).txt}: ${x.all} concerts, ${x.near} near home, ${x.big} big venue</title></rect>`;
+    s += `<rect x="${(X + 1).toFixed(1)}" y="${(H - hb).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${hb.toFixed(1)}" fill="#f0f"/>`;
+    if (hn) s += `<rect x="${(X + 1).toFixed(1)}" y="${(H - hb - hn).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${hn.toFixed(1)}" fill="#0f0"/>`;
+    if (x.ymd.slice(8) === '01' || i === 0) s += `<text x="${X.toFixed(1)}" y="${H + 14}" fill="#888" font-size="12" font-family="Consolas,monospace">${concDay(x.ymd).txt.slice(4)}</text>`;
+  });
+  return s + '</svg>';
+}
+RENDER.concerts = d => {
+  const L = d.concerts || [], cy = d.cycles || [], w = d.window || {}, cnt = d.concert_counts || {};
+  const t7 = new Date(Date.parse(todayMadrid() + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+  const n = {week: L.filter(e => e.date < t7).length, near: L.filter(e => e.near).length, big: L.filter(e => e.big).length, all: L.length};
+  const genres = [...new Set(L.map(e => e.genre || 'Not given'))].sort();
+  const arena = L.filter(e => /palau sant jordi|sant jordi club|estadi ol/i.test(e.venue || '')).slice(0, 14);
+  const B = (k, t) => `<button data-m="${k}" class="cm${CF.mode === k ? ' on' : ''}">${t} (${n[k]})</button>`;
+  return `<div class="h y" style="margin-top:4px">Concerts per day, next 60 days <span class="sm d">(yellow all, magenta big Barcelona venue, green near home; grey band = weekend)</span></div>${concDensity(L)}
+    <div class="grid cg" style="margin-top:12px">
+      <div class="box"><div class="cfil">${B('week', 'Next 7 days')}${B('near', 'Near home')}${B('big', 'Big BCN venues')}${B('all', 'All')}</div>
+        <div class="cfil"><select id="cgen"><option value="">Any genre</option>${genres.map(g => `<option${CF.genre === g ? ' selected' : ''}>${esc(g)}</option>`).join('')}</select>
+          <label class="sm"><input type="checkbox" id="cfree"${CF.free ? ' checked' : ''}> Free only</label>
+          <input id="cq" type="search" placeholder="Artist, venue, town" value="${esc(CF.q)}"></div>
+        <div id="clist"></div></div>
+      <div>
+        <div class="box"><h3 class="m">Arena shows (Palau Sant Jordi, Sant Jordi Club, Olympic Stadium)</h3>
+          ${arena.length ? arena.map(e => `<div class="kv"><span>${link(e.url, e.name)}<br><span class="d sm">${esc(e.venue)}</span></span><span class="n"><b class="y">${concDay(e.date).txt}</b><br><span class="sm">${esc(e.price || '?')}</span></span></div>`).join('') : '<div class="d">None listed.</div>'}</div>
+        <div class="box" style="margin-top:12px"><h3 class="y">Festivals and concert cycles running</h3>
+          <div style="max-height:520px;overflow-y:auto">${cy.length ? cy.map(e => `<div class="kv"><span>${link(e.url, e.name)}<br><span class="d sm">${esc(e.venue || '')}, ${esc(e.town || '')}${isNum(e.km) ? ' &middot; ' + Math.round(e.km) + ' km' : ''}</span></span><span class="n sm">until<br><b>${concDay(e.until || e.date).txt}</b></span></div>`).join('') : '<div class="d">None listed.</div>'}</div>
+          <div class="d sm">Listed by the agendas as one long entry (more than a week), so they are kept out of the day list.</div></div>
+      </div>
+    </div>
+    <details class="d sm" style="margin-top:8px"><summary>About this list</summary>Concerts in Catalonia for the next ${w.days || '--'} days as listed by the Generalitat cultural agenda (${isNum(cnt.catalonia_agenda) ? cnt.catalonia_agenda : '--'} entries) and the Barcelona city agenda (${isNum(cnt.barcelona_agenda) ? cnt.barcelona_agenda : '--'} entries); a show is merged into one row where the name and venue match, or the venue and start time do.
+      Big Barcelona venues are listed ${w.big_days || '--'} days ahead, from the Barcelona city agenda only: ${esc((d.big_venues || []).join(', '))}. Near home = within ${w.near_km || '--'} km of Santa Coloma de Farners in a straight line.
+      Genre only where the Barcelona agenda gives one. Prices as published by the agenda, before booking fees. A show its promoter never sent to either agenda is missing: check the venue before ruling one out.</details>`;
+};
+function concDraw(d) {
+  const box = document.getElementById('clist');
+  if (!box) return;
+  const L = concFilter(d.concerts || []), cap = CF.all ? L.length : 150;
+  let html = '', last = '';
+  L.slice(0, cap).forEach(e => {
+    if (e.date !== last) { last = e.date; const x = concDay(e.date), k = daysTo(e.date);
+      html += `<div class="cdh${x.wd === 0 || x.wd === 6 ? ' we' : ''}">${esc(x.txt)} <span class="sm">${k === 0 ? 'TODAY' : k === 1 ? 'tomorrow' : 'in ' + k + ' days'}</span></div>`; }
+    html += concRow(e);
+  });
+  if (!L.length) html = '<div class="d" style="padding:10px 0">No concert matches this filter.</div>';
+  if (L.length > cap) html += `<div style="margin-top:8px"><button id="cmore">Show all ${L.length}</button> <span class="d sm">showing the first ${cap}</span></div>`;
+  box.innerHTML = `<div class="d sm" style="margin-bottom:4px">${L.length} concert${L.length === 1 ? '' : 's'}</div>` + html;
+  const more = document.getElementById('cmore');
+  if (more) more.onclick = () => { CF.all = true; concDraw(d); };
+}
+PAGES[500].after = d => {
+  document.querySelectorAll('button.cm').forEach(b => { b.onclick = () => {
+    CF.mode = b.dataset.m; CF.all = false;
+    document.querySelectorAll('button.cm').forEach(x => x.classList.toggle('on', x === b)); concDraw(d); }; });
+  const g = document.getElementById('cgen'), fr = document.getElementById('cfree'), q = document.getElementById('cq');
+  if (g) g.onchange = () => { CF.genre = g.value; CF.all = false; concDraw(d); };
+  if (fr) fr.onchange = () => { CF.free = fr.checked; concDraw(d); };
+  if (q) q.oninput = () => { CF.q = q.value; concDraw(d); };
+  concDraw(d);
+};
+
+/* ---------- start ---------- */
+tick(); setInterval(tick, 1000);
+go(PAGES[Number(location.hash.slice(1))] ? Number(location.hash.slice(1)) : 100);
+</script>
+<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js');</script>
+</body>
+</html>
